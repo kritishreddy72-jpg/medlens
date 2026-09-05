@@ -1,10 +1,11 @@
-﻿# Dependencies
+# Dependencies
 node_modules/
 */node_modules/
 
 # Production Builds
 dist/
 */dist/
+!packages/clinical-engine/dist/
 dist-ssr/
 
 # Environment and Keys
