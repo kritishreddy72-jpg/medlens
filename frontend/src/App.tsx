@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { CLINICAL_PRESETS } from './data/clinicalPresets';
 import { 
   BiomarkerReading, 
@@ -21,10 +21,17 @@ import { UploadModal } from './components/UploadModal';
 import { PatientIntakeModal } from './components/PatientIntakeModal';
 import { ClarificationChips } from './components/ClarificationChips';
 import { detectClinicalConflicts } from './engine/conflictRadar';
-import { calculateLongitudinalTrends } from './engine/chronometer';
-import { generateSbarReport, exportToFhirR4 } from './engine/sbarGenerator';
+import { calculateLongitudinalTrends, BiomarkerTrend } from './engine/chronometer';
+import { generateSbarReport, exportToFhirR4, SbarReport } from './engine/sbarGenerator';
 import { generateClinicalSummaryPdf } from './services/pdfExportService';
 import { ExtractionResult } from './services/geminiService';
+import { 
+  checkBackendHealth,
+  evaluateConflictsWithBackend,
+  calculateTrendsWithBackend,
+  generateSbarWithBackend,
+  exportFhirWithBackend 
+} from './services/apiClient';
 import { evaluateBiomarkerStatus } from './engine/rangeEvaluator';
 import { WhatsAppShareModal } from './components/WhatsAppShareModal';
 import { ShieldCheck, HeartPulse, Sparkles, AlertCircle, Database, FileText } from 'lucide-react';
@@ -189,8 +196,27 @@ Alternatively, click "Update Intake Info & Vitals" above to edit patient details
     setSelectedReadingId(null);
   };
 
-  // Re-evaluate clinical conflicts deterministically
-  const conflicts = useMemo(() => {
+  // Backend sync state
+  const [backendStatus, setBackendStatus] = useState<'checking' | 'connected' | 'offline'>('checking');
+  const [backendConflicts, setBackendConflicts] = useState<ClinicalConflict[] | null>(null);
+  const [backendTrends, setBackendTrends] = useState<BiomarkerTrend[] | null>(null);
+  const [backendSbar, setBackendSbar] = useState<SbarReport | null>(null);
+  const [backendFhir, setBackendFhir] = useState<any | null>(null);
+
+  // Monitor backend health
+  useEffect(() => {
+    let timer: any;
+    const check = async () => {
+      const res = await checkBackendHealth();
+      setBackendStatus(res.online ? 'connected' : 'offline');
+    };
+    check();
+    timer = setInterval(check, 10000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Compute local fallback values
+  const localConflicts = useMemo(() => {
     const detected = detectClinicalConflicts(patient, readings);
     const combined = [...(selectedPreset.initial_conflicts || []), ...detected];
     const uniqueMap = new Map<string, ClinicalConflict>();
@@ -200,20 +226,76 @@ Alternatively, click "Update Intake Info & Vitals" above to edit patient details
     return Array.from(uniqueMap.values());
   }, [patient, readings, selectedPreset]);
 
-  // Re-evaluate longitudinal biomarker trends
-  const trends = useMemo(() => {
+  const localTrends = useMemo(() => {
     return calculateLongitudinalTrends(readings, historicalReadings);
   }, [readings, historicalReadings]);
 
-  // Generate Doctor SBAR briefing
-  const sbar = useMemo(() => {
+  // Request backend evaluations asynchronously
+  useEffect(() => {
+    let active = true;
+    evaluateConflictsWithBackend(patient, readings)
+      .then(res => {
+        if (active) {
+          const combined = [...(selectedPreset.initial_conflicts || []), ...res];
+          const uniqueMap = new Map<string, ClinicalConflict>();
+          for (const c of combined) {
+            uniqueMap.set(c.id, c);
+          }
+          setBackendConflicts(Array.from(uniqueMap.values()));
+        }
+      })
+      .catch(err => {
+        console.warn('Backend conflicts fallback to local:', err);
+      });
+
+    calculateTrendsWithBackend(readings, historicalReadings)
+      .then(res => {
+        if (active) setBackendTrends(res);
+      })
+      .catch(err => {
+        console.warn('Backend trends fallback to local:', err);
+      });
+
+    return () => { active = false; };
+  }, [patient, readings, historicalReadings, selectedPreset]);
+
+  // Active conflicts and trends (backend result prioritized, local as instant fallback)
+  const conflicts = backendConflicts ?? localConflicts;
+  const trends = backendTrends ?? localTrends;
+
+  // Local Sbar & Fhir fallbacks
+  const localSbar = useMemo(() => {
     return generateSbarReport(patient, readings, conflicts, trends);
   }, [patient, readings, conflicts, trends]);
 
-  // Generate FHIR R4 Bundle
-  const fhirJson = useMemo(() => {
+  const localFhir = useMemo(() => {
     return exportToFhirR4(patient, readings, documentInfo.title);
   }, [patient, readings, documentInfo]);
+
+  // Sync SBAR and FHIR from backend
+  useEffect(() => {
+    let active = true;
+    generateSbarWithBackend(patient, readings, conflicts, trends)
+      .then(res => {
+        if (active) setBackendSbar(res);
+      })
+      .catch(err => {
+        console.warn('Backend SBAR fallback to local:', err);
+      });
+
+    exportFhirWithBackend(patient, readings, documentInfo.title)
+      .then(res => {
+        if (active) setBackendFhir(res);
+      })
+      .catch(err => {
+        console.warn('Backend FHIR fallback to local:', err);
+      });
+
+    return () => { active = false; };
+  }, [patient, readings, conflicts, trends, documentInfo.title]);
+
+  const sbar = backendSbar ?? localSbar;
+  const fhirJson = backendFhir ?? localFhir;
 
   const unreviewedCount = readings.filter(r => r.needs_review || r.confidence < 0.70).length;
 
@@ -233,6 +315,7 @@ Alternatively, click "Update Intake Info & Vitals" above to edit patient details
         auditCount={auditEntries.length}
         hasCriticalConflicts={conflicts.some(c => c.severity === 'CRITICAL')}
         unreviewedCount={unreviewedCount}
+        backendStatus={backendStatus}
       />
 
       {/* Main Container */}

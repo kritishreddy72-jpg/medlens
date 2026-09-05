@@ -28,6 +28,7 @@ interface NavbarProps {
   auditCount: number;
   hasCriticalConflicts: boolean;
   unreviewedCount: number;
+  backendStatus?: 'connected' | 'checking' | 'offline';
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -41,7 +42,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenWhatsApp,
   auditCount,
   hasCriticalConflicts,
-  unreviewedCount
+  unreviewedCount,
+  backendStatus = 'connected'
 }) => {
   return (
     <header className="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-slate-200 shadow-xs">
@@ -58,6 +60,16 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <span className="text-xl font-bold tracking-tight text-slate-900">MedLens</span>
                 <span className="px-2 py-0.5 text-[10px] font-semibold tracking-wider text-blue-700 bg-blue-50 border border-blue-200/70 rounded-full uppercase">
                   Clinical Intelligence
+                </span>
+                <span className={`px-2 py-0.5 text-[10px] font-semibold tracking-wider rounded-full flex items-center space-x-1 border ${
+                  backendStatus === 'connected'
+                    ? 'text-emerald-700 bg-emerald-50 border-emerald-200'
+                    : backendStatus === 'checking'
+                    ? 'text-amber-700 bg-amber-50 border-amber-200'
+                    : 'text-slate-600 bg-slate-100 border-slate-200'
+                }`}>
+                  <span className={`w-1.5 h-1.5 rounded-full ${backendStatus === 'connected' ? 'bg-emerald-500 animate-pulse' : 'bg-slate-400'}`}></span>
+                  <span>{backendStatus === 'connected' ? 'API Connected' : 'Local Mode'}</span>
                 </span>
               </div>
               <p className="text-xs text-slate-500 hidden sm:block">

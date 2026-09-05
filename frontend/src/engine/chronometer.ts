@@ -13,6 +13,8 @@ export interface TrendAnalysis {
   sparkline_svg_path: string;
 }
 
+export type BiomarkerTrend = TrendAnalysis;
+
 /**
  * Aggregates current and historical readings to compute longitudinal deltas and sparklines.
  */
