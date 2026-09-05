@@ -2,6 +2,9 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
+import { fileURLToPath } from 'url'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -11,7 +14,7 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@medlens/clinical-engine': path.resolve(import.meta.dirname, '../packages/clinical-engine/src/index.ts')
+      '@medlens/clinical-engine': path.resolve(__dirname, '../packages/clinical-engine/src/index.ts')
     }
   }
 })
