@@ -13,6 +13,10 @@
     "moduleDetection": "force",
     "noEmit": true,
     "jsx": "react-jsx",
+    "paths": {
+      "@medlens/clinical-engine": ["../packages/clinical-engine/src/index.ts"],
+      "@medlens/clinical-engine/*": ["../packages/clinical-engine/src/*"]
+    },
 
     /* Linting */
     "noUnusedLocals": false,

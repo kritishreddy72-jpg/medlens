@@ -1,8 +1,11 @@
 import { Router, Request, Response } from 'express';
-import { evaluateBiomarkerStatus } from '../engine/rangeEvaluator';
-import { detectClinicalConflicts } from '../engine/conflictRadar';
-import { calculateLongitudinalTrends } from '../engine/chronometer';
-import { generateSbarReport, exportToFhirR4 } from '../engine/sbarGenerator';
+import { 
+  evaluateBiomarkerStatus, 
+  detectClinicalConflicts, 
+  calculateLongitudinalTrends, 
+  generateSbarReport, 
+  exportToFhirR4 
+} from '@medlens/clinical-engine';
 import { CLINICAL_PRESETS } from '../data_presets';
 import { GoogleGenAI, Type } from '@google/genai';
 

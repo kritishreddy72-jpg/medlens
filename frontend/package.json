@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@medlens/clinical-engine": "*",
     "canvas-confetti": "^1.9.4",
     "clsx": "^2.1.1",
     "jspdf": "^4.2.1",
