@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { 
   Printer, 
   Download, 
@@ -26,6 +26,17 @@ export const DoctorBriefingModal: React.FC<DoctorBriefingModalProps> = ({
   onShareWhatsApp,
   onClose
 }) => {
+  // Escape key closes modal
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
   const handlePrint = () => {
     window.print();
   };
@@ -41,7 +52,12 @@ export const DoctorBriefingModal: React.FC<DoctorBriefingModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 overflow-y-auto animate-in fade-in">
+    <div 
+      className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 overflow-y-auto animate-in fade-in"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="briefing-modal-title"
+    >
       <div className="bg-white rounded-2xl max-w-3xl w-full my-8 shadow-2xl border border-slate-200 flex flex-col max-h-[90vh]">
         
         {/* Modal Header (Hidden during print) */}
@@ -51,7 +67,7 @@ export const DoctorBriefingModal: React.FC<DoctorBriefingModalProps> = ({
               <Stethoscope className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-slate-900">
+              <h2 id="briefing-modal-title" className="text-base font-bold text-slate-900">
                 Doctor-Visit Briefing Pack (SBAR Clinical Standard)
               </h2>
               <p className="text-xs text-slate-500">
@@ -88,7 +104,8 @@ export const DoctorBriefingModal: React.FC<DoctorBriefingModalProps> = ({
             )}
             <button
               onClick={onClose}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100"
+              aria-label="Close briefing dialog"
+              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>

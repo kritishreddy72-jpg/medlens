@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Upload, X, FileText, AlertCircle, Sparkles, Loader2, Cpu } from 'lucide-react';
 import { extractMedicalReportWithGemini, ExtractionResult } from '../services/geminiService';
 import { parseClinicalTextOffline } from '../engine/offlineClinicalParser';
@@ -73,6 +73,17 @@ export const UploadModal: React.FC<UploadModalProps> = ({
   const [rawTextFallback, setRawTextFallback] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Escape key closes modal
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -171,7 +182,12 @@ export const UploadModal: React.FC<UploadModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in">
+    <div 
+      className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="upload-modal-title"
+    >
       <div className="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-slate-200 space-y-4 max-h-[92vh] flex flex-col">
         
         {/* Header */}
@@ -181,7 +197,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
               <Upload className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-slate-900">
+              <h2 id="upload-modal-title" className="text-base font-bold text-slate-900">
                 Medical Report Processing & Intake
               </h2>
               <p className="text-xs text-slate-500">
@@ -189,7 +205,11 @@ export const UploadModal: React.FC<UploadModalProps> = ({
               </p>
             </div>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 p-1">
+          <button 
+            onClick={onClose} 
+            aria-label="Close upload dialog"
+            className="text-slate-400 hover:text-slate-600 p-1 cursor-pointer"
+          >
             <X className="w-5 h-5" />
           </button>
         </div>

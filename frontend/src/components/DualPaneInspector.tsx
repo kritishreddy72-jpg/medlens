@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   FileText, 
   Search, 
@@ -56,6 +56,18 @@ export const DualPaneInspector: React.FC<DualPaneInspectorProps> = ({
   const [editUnit, setEditUnit] = useState<string>('');
   const [editRange, setEditRange] = useState<string>('');
   const [editReason, setEditReason] = useState<string>('');
+
+  // Close inline edit modal on Escape
+  useEffect(() => {
+    if (!editingReading) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setEditingReading(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [editingReading]);
 
   const selectedReading = readings.find(r => r.id === selectedReadingId) || null;
 
@@ -223,7 +235,8 @@ export const DualPaneInspector: React.FC<DualPaneInspectorProps> = ({
           <div className="flex items-center space-x-1.5">
             <button
               onClick={handleCopyDoc}
-              className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+              aria-label="Copy raw document text"
+              className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors cursor-pointer"
               title="Copy Raw Text"
             >
               {copiedDoc ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
@@ -455,7 +468,8 @@ export const DualPaneInspector: React.FC<DualPaneInspectorProps> = ({
                       {isGated && (
                         <button
                           onClick={(e) => handleQuickVerify(reading, e)}
-                          className="p-1.5 rounded-md text-emerald-700 bg-emerald-50 hover:bg-emerald-100 transition-colors"
+                          aria-label={`Quick verify ${reading.test_name}`}
+                          className="p-1.5 rounded-md text-emerald-700 bg-emerald-50 hover:bg-emerald-100 transition-colors cursor-pointer"
                           title="Quick Verify (Approve extracted value)"
                         >
                           <Check className="w-3.5 h-3.5" />
@@ -463,14 +477,16 @@ export const DualPaneInspector: React.FC<DualPaneInspectorProps> = ({
                       )}
                       <button
                         onClick={() => onSelectReading(reading.id)}
-                        className="p-1.5 rounded-md text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                        aria-label={`Pinpoint ${reading.test_name} on source document`}
+                        className="p-1.5 rounded-md text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors cursor-pointer"
                         title="Pinpoint on Source Document"
                       >
                         <Eye className="w-3.5 h-3.5" />
                       </button>
                       <button
                         onClick={() => handleOpenEdit(reading)}
-                        className={`p-1.5 rounded-md transition-colors ${
+                        aria-label={`Edit ${reading.test_name} and log audit entry`}
+                        className={`p-1.5 rounded-md transition-colors cursor-pointer ${
                           isGated 
                             ? 'text-amber-700 bg-amber-100 hover:bg-amber-200' 
                             : 'text-slate-400 hover:text-slate-800 hover:bg-slate-100'
@@ -506,12 +522,17 @@ export const DualPaneInspector: React.FC<DualPaneInspectorProps> = ({
 
       {/* INLINE EDIT & AUDIT MODAL */}
       {editingReading && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in">
+        <div 
+          className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="edit-reading-title"
+        >
           <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4">
             
             <div className="flex items-start justify-between border-b border-slate-100 pb-3">
               <div>
-                <h3 className="text-base font-bold text-slate-900">
+                <h3 id="edit-reading-title" className="text-base font-bold text-slate-900">
                   Human-in-the-Loop Verification
                 </h3>
                 <p className="text-xs text-slate-500">
@@ -520,7 +541,8 @@ export const DualPaneInspector: React.FC<DualPaneInspectorProps> = ({
               </div>
               <button
                 onClick={() => setEditingReading(null)}
-                className="text-slate-400 hover:text-slate-600 text-sm"
+                aria-label="Close edit dialog"
+                className="text-slate-400 hover:text-slate-600 text-sm cursor-pointer p-1"
               >
                 ✕
               </button>

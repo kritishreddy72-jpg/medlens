@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { 
   X, 
   Copy, 
@@ -30,6 +30,17 @@ export const WhatsAppShareModal: React.FC<WhatsAppShareModalProps> = ({
   documentTitle,
   onClose
 }) => {
+  // Escape key closes modal
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
   const [phoneNumber, setPhoneNumber] = useState('');
   const [copied, setCopied] = useState(false);
   
@@ -152,7 +163,12 @@ export const WhatsAppShareModal: React.FC<WhatsAppShareModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in">
+    <div 
+      className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="whatsapp-modal-title"
+    >
       <div className="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-slate-200 space-y-4 max-h-[92vh] flex flex-col">
         
         {/* Modal Header */}
@@ -162,7 +178,7 @@ export const WhatsAppShareModal: React.FC<WhatsAppShareModalProps> = ({
               <MessageSquare className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-slate-900 flex items-center space-x-2">
+              <h2 id="whatsapp-modal-title" className="text-base font-bold text-slate-900 flex items-center space-x-2">
                 <span>Share Clinical Record via WhatsApp</span>
                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-semibold border border-emerald-200">
                   Instant Sharing
@@ -173,7 +189,11 @@ export const WhatsAppShareModal: React.FC<WhatsAppShareModalProps> = ({
               </p>
             </div>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 p-1 cursor-pointer">
+          <button 
+            onClick={onClose} 
+            aria-label="Close WhatsApp sharing dialog"
+            className="text-slate-400 hover:text-slate-600 p-1 cursor-pointer"
+          >
             <X className="w-5 h-5" />
           </button>
         </div>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { History, X, CheckCircle, ShieldCheck, UserCheck } from 'lucide-react';
 import { AuditEntry } from '../types/clinical';
 
@@ -11,8 +11,24 @@ export const AuditLogModal: React.FC<AuditLogModalProps> = ({
   entries,
   onClose
 }) => {
+  // Escape key closes modal
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in">
+    <div 
+      className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="audit-modal-title"
+    >
       <div className="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl border border-slate-200 space-y-4 max-h-[85vh] flex flex-col">
         
         {/* Header */}
@@ -22,7 +38,7 @@ export const AuditLogModal: React.FC<AuditLogModalProps> = ({
               <History className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-slate-900">
+              <h2 id="audit-modal-title" className="text-base font-bold text-slate-900">
                 Human-in-the-Loop Clinical Audit Trail
               </h2>
               <p className="text-xs text-slate-500">
@@ -32,7 +48,8 @@ export const AuditLogModal: React.FC<AuditLogModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-600 p-1"
+            aria-label="Close audit log"
+            className="text-slate-400 hover:text-slate-600 p-1 cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
