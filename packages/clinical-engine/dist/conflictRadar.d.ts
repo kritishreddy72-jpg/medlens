@@ -1,4 +1,4 @@
-import { BiomarkerReading, ClinicalConflict, PatientProfile } from './types/clinical';
+import { BiomarkerReading, ClinicalConflict, PatientProfile } from './types/clinical.js';
 interface DrugClassMapping {
     class_name: string;
     atc_code: string;

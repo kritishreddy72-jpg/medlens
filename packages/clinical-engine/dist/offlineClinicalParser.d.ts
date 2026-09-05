@@ -1,4 +1,4 @@
-import { BiomarkerReading } from './types/clinical';
+import { BiomarkerReading } from './types/clinical.js';
 export interface LocalExtractionResult {
     readings: BiomarkerReading[];
     document_summary: string;

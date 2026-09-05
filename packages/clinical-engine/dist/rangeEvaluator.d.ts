@@ -1,4 +1,4 @@
-import { BiomarkerReading, BiomarkerStatus, ReferenceRange } from './types/clinical';
+import { BiomarkerReading, BiomarkerStatus, ReferenceRange } from './types/clinical.js';
 export declare const CONFIDENCE_THRESHOLD = 0.7;
 export interface ParsedRange {
     low?: number;

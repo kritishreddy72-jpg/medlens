@@ -1,4 +1,4 @@
-import { BiomarkerReading } from './types/clinical';
+import { BiomarkerReading } from './types/clinical.js';
 export interface TrendAnalysis {
     test_name: string;
     unit: string;

@@ -1,5 +1,5 @@
-import { BiomarkerReading, ClinicalConflict, PatientProfile } from './types/clinical';
-import { TrendAnalysis } from './chronometer';
+import { BiomarkerReading, ClinicalConflict, PatientProfile } from './types/clinical.js';
+import { TrendAnalysis } from './chronometer.js';
 export interface SbarReport {
     situation: {
         patient_header: string;

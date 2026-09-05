@@ -1,4 +1,4 @@
-import { evaluateBiomarkerStatus, parseReferenceRangeString } from './rangeEvaluator';
+import { evaluateBiomarkerStatus, parseReferenceRangeString } from './rangeEvaluator.js';
 const TEST_CATALOG = [
     // Metabolic
     {
