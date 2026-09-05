@@ -61,7 +61,7 @@ export function calculateLongitudinalTrends(
       nameLower.includes('glucose') || 
       nameLower.includes('hba1c') || 
       nameLower.includes('ldl') || 
-      nameLower.includes('cholesterol') ||
+      (nameLower.includes('cholesterol') && !nameLower.includes('hdl')) ||
       nameLower.includes('triglyceride') || 
       nameLower.includes('creatinine') ||
       nameLower.includes('wbc');

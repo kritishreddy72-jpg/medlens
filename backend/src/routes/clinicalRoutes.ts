@@ -14,7 +14,7 @@ export const clinicalRouter = Router();
 // Healthcheck
 clinicalRouter.get('/health', (req: Request, res: Response) => {
   res.json({
-    status: 'online',
+    status: 'ok',
     service: 'MedLens Clinical Intelligence API',
     version: '2.5.0',
     deterministic_engine: 'Active',
