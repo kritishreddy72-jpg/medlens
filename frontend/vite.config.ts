@@ -14,7 +14,7 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@medlens/clinical-engine': path.resolve(__dirname, 'src/engine/index.ts')
+      '@medlens/clinical-engine': path.resolve(__dirname, '../packages/clinical-engine/src/index.ts')
     }
   }
 })
