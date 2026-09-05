@@ -1,9 +1,47 @@
-﻿import { GoogleGenAI, Type } from '@google/genai';
+import { GoogleGenAI, Type } from '@google/genai';
 import { evaluateBiomarkerStatus } from '@medlens/clinical-engine';
 
+/**
+ * Rate Limiter for AI endpoints (~30 req/min per IP).
+ * - Primary (Distributed): Upstash Redis / Vercel KV REST API if KV_REST_API_URL or UPSTASH_REDIS_REST_URL is configured.
+ * - Fallback (Instance-Local): In-memory Map sliding window.
+ */
 const ipMap = new Map<string, { count: number; resetTime: number }>();
-function checkRateLimit(req: any): boolean {
-  const ip = (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() || req.socket?.remoteAddress || 'anonymous';
+
+async function checkRateLimit(req: any): Promise<boolean> {
+  const ip = (req.headers?.['x-forwarded-for'] as string)?.split(',')[0]?.trim() || req.socket?.remoteAddress || 'anonymous';
+  const redisUrl = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+  const redisToken = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+
+  if (redisUrl && redisToken) {
+    try {
+      const key = `ratelimit:gemini:${ip}`;
+      const res = await fetch(`${redisUrl}/pipeline`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${redisToken}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify([
+          ['INCR', key],
+          ['EXPIRE', key, 60]
+        ]),
+        signal: AbortSignal.timeout(1500)
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const currentCount = data?.[0]?.result;
+        if (typeof currentCount === 'number' && currentCount > 30) {
+          return true;
+        }
+        return false;
+      }
+    } catch {
+      // Degrade gracefully to in-memory on network failure/timeout
+    }
+  }
+
+  // In-memory fallback per Lambda instance
   const now = Date.now();
   const entry = ipMap.get(ip);
   if (!entry || now > entry.resetTime) {
@@ -12,6 +50,47 @@ function checkRateLimit(req: any): boolean {
   }
   if (entry.count >= 30) return true;
   entry.count++;
+  return false;
+}
+
+function handleCors(req: any, res: any): boolean {
+  const origin = req.headers?.origin || req.headers?.Origin;
+  const allowedOrigins = process.env.CORS_ORIGIN
+    ? process.env.CORS_ORIGIN.split(',').map((o: string) => o.trim())
+    : [
+        'http://localhost:3000',
+        'http://127.0.0.1:3000',
+        'https://medlens-nnv1ve9zm-aibs4.vercel.app',
+        'https://medlens-aibs4.vercel.app',
+        'https://medlens.vercel.app'
+      ];
+
+  const isAllowed = !origin || allowedOrigins.includes(origin) || (typeof origin === 'string' && origin.endsWith('.vercel.app'));
+
+  if (origin && isAllowed) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Vary', 'Origin');
+  } else if (!origin) {
+    res.setHeader('Access-Control-Allow-Origin', allowedOrigins[0] || 'http://localhost:3000');
+  }
+
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+
+  if (req.method === 'OPTIONS') {
+    res.statusCode = 200;
+    res.end();
+    return true;
+  }
+
+  if (origin && !isAllowed) {
+    res.statusCode = 403;
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify({ error: `CORS blocked for origin: ${origin}` }));
+    return true;
+  }
+
   return false;
 }
 
@@ -31,18 +110,10 @@ async function parseBody(req: any): Promise<any> {
 }
 
 export default async function handler(req: any, res: any) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  if (handleCors(req, res)) return;
   res.setHeader('Content-Type', 'application/json');
 
-  if (req.method === 'OPTIONS') {
-    res.statusCode = 200;
-    res.end();
-    return;
-  }
-
-  if (checkRateLimit(req)) {
+  if (await checkRateLimit(req)) {
     res.statusCode = 429;
     res.end(JSON.stringify({ error: 'Too many clinical AI extraction requests. Please wait a minute before retrying.' }));
     return;
