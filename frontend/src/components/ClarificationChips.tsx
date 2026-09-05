@@ -15,9 +15,14 @@ export const ClarificationChips: React.FC<ClarificationChipsProps> = ({
   if (unresolved.length === 0) return null;
 
   return (
-    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200/80 rounded-2xl p-4 shadow-xs space-y-3">
+    <div 
+      className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200/80 rounded-2xl p-4 shadow-xs space-y-3"
+      role="region"
+      aria-label="Context-Aware Proactive Clarification"
+      aria-live="polite"
+    >
       <div className="flex items-center space-x-2 text-blue-900">
-        <Sparkles className="w-4 h-4 text-blue-600 shrink-0" />
+        <Sparkles className="w-4 h-4 text-blue-600 shrink-0" aria-hidden="true" />
         <h3 className="text-xs font-bold uppercase tracking-wider">
           Context-Aware Proactive Clarification
         </h3>
@@ -36,11 +41,12 @@ export const ClarificationChips: React.FC<ClarificationChipsProps> = ({
               {p.question}
             </p>
 
-            <div className="flex flex-wrap gap-1.5 pt-1">
+            <div className="flex flex-wrap gap-1.5 pt-1" role="group" aria-label={`Options for: ${p.question}`}>
               {p.suggested_options.map((opt, idx) => (
                 <button
                   key={idx}
                   onClick={() => onResolvePrompt(p.id, opt)}
+                  aria-label={`Select clarification option: ${opt}`}
                   className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-50 hover:bg-blue-600 hover:text-white text-blue-700 border border-blue-200 transition-all cursor-pointer text-left"
                 >
                   {opt}

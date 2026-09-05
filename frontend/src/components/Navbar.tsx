@@ -89,6 +89,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <button
                   key={preset.id}
                   onClick={() => onSelectPreset(preset)}
+                  aria-label={`Select clinical preset: ${preset.title}`}
+                  aria-pressed={isSelected}
                   className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
                     isSelected
                       ? 'bg-white text-blue-700 shadow-xs border border-slate-200/80 font-semibold'
@@ -103,10 +105,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             
             <button
               onClick={onNewPatient}
+              aria-label="Start a new blank patient intake from scratch"
               className="ml-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-emerald-700 hover:bg-emerald-50 transition-colors flex items-center space-x-1 cursor-pointer"
               title="Start a new blank patient intake from scratch"
             >
-              <UserPlus className="w-3.5 h-3.5" />
+              <UserPlus className="w-3.5 h-3.5" aria-hidden="true" />
               <span>New Patient</span>
             </button>
           </div>
@@ -117,22 +120,24 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Custom Document Upload */}
             <button
               onClick={onOpenUpload}
+              aria-label="Upload laboratory report"
               className="inline-flex items-center space-x-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition-colors cursor-pointer"
             >
-              <Upload className="w-3.5 h-3.5" />
+              <Upload className="w-3.5 h-3.5" aria-hidden="true" />
               <span className="hidden sm:inline">Upload Report</span>
             </button>
 
             {/* Audit Log Trigger */}
             <button
               onClick={onOpenAudit}
+              aria-label={`View Human-in-the-Loop audit log (${auditCount} actions logged)`}
               className="relative inline-flex items-center space-x-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition-colors cursor-pointer"
               title="View Human-in-the-Loop Audit Trail"
             >
-              <History className="w-3.5 h-3.5 text-slate-500" />
+              <History className="w-3.5 h-3.5 text-slate-500" aria-hidden="true" />
               <span className="hidden sm:inline">Audit Log</span>
               {auditCount > 0 && (
-                <span className="inline-flex items-center justify-center px-1.5 py-0.2 text-[10px] font-bold text-white bg-blue-600 rounded-full">
+                <span className="inline-flex items-center justify-center px-1.5 py-0.2 text-[10px] font-bold text-white bg-blue-600 rounded-full" aria-hidden="true">
                   {auditCount}
                 </span>
               )}
@@ -141,29 +146,32 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Quick PDF Export */}
             <button
               onClick={onExportPdf}
+              aria-label="Download Clinical Summary PDF"
               className="inline-flex items-center space-x-1.5 px-3 py-2 rounded-lg text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-300 transition-colors cursor-pointer"
               title="Download Clinical Summary PDF"
             >
-              <Download className="w-3.5 h-3.5 text-slate-600" />
+              <Download className="w-3.5 h-3.5 text-slate-600" aria-hidden="true" />
               <span className="hidden md:inline">Export PDF</span>
             </button>
 
             {/* WhatsApp Share */}
             <button
               onClick={onOpenWhatsApp}
+              aria-label="Share clinical summary to WhatsApp"
               className="inline-flex items-center space-x-1.5 px-3 py-2 rounded-lg text-xs font-semibold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 transition-colors cursor-pointer"
               title="Share Clinical Summary to WhatsApp"
             >
-              <MessageSquare className="w-3.5 h-3.5 text-emerald-600" />
+              <MessageSquare className="w-3.5 h-3.5 text-emerald-600" aria-hidden="true" />
               <span className="hidden md:inline">WhatsApp</span>
             </button>
 
             {/* Doctor SBAR Briefing Pack */}
             <button
               onClick={onOpenBriefing}
+              aria-label="Generate and view Doctor SBAR Briefing"
               className="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-sm shadow-blue-500/25 transition-all cursor-pointer"
             >
-              <Printer className="w-3.5 h-3.5" />
+              <Printer className="w-3.5 h-3.5" aria-hidden="true" />
               <span>Doctor Briefing</span>
             </button>
 
@@ -177,6 +185,8 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               key={preset.id}
               onClick={() => onSelectPreset(preset)}
+              aria-label={`Select clinical preset: ${preset.title}`}
+              aria-pressed={preset.id === selectedPreset.id}
               className={`shrink-0 px-2.5 py-1 rounded-md text-[11px] font-medium ${
                 preset.id === selectedPreset.id
                   ? 'bg-blue-600 text-white font-semibold'
@@ -188,9 +198,10 @@ export const Navbar: React.FC<NavbarProps> = ({
           ))}
           <button
             onClick={onNewPatient}
+            aria-label="Create new patient intake"
             className="shrink-0 px-2 py-1 rounded-md text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center space-x-1"
           >
-            <UserPlus className="w-3 h-3" />
+            <UserPlus className="w-3 h-3" aria-hidden="true" />
             <span>New</span>
           </button>
         </div>

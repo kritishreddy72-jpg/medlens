@@ -46,7 +46,15 @@ export const RangeVisualizer: React.FC<RangeVisualizerProps> = ({ reading, compa
 
     if (compact) {
       return (
-        <div className="w-28 space-y-1">
+        <div 
+          className="w-28 space-y-1"
+          role="meter"
+          aria-label={`${reading.test_name} result ${numVal} ${reading.unit}, status ${status}, reference range ${low} to ${high}`}
+          aria-valuenow={numVal}
+          aria-valuemin={low}
+          aria-valuemax={high}
+          aria-valuetext={`${numVal} ${reading.unit}, ${status}`}
+        >
           <div className="relative h-2 w-full bg-slate-100 rounded-full overflow-hidden flex">
             {/* Low Zone */}
             <div style={{ width: `${lowPct}%` }} className="bg-blue-100 h-full" />
@@ -70,7 +78,15 @@ export const RangeVisualizer: React.FC<RangeVisualizerProps> = ({ reading, compa
     }
 
     return (
-      <div className="space-y-1.5 w-full max-w-xs">
+      <div 
+        className="space-y-1.5 w-full max-w-xs"
+        role="meter"
+        aria-label={`${reading.test_name} result ${numVal} ${reading.unit}, status ${status}, reference range ${reference_range.text_range}`}
+        aria-valuenow={numVal}
+        aria-valuemin={low}
+        aria-valuemax={high}
+        aria-valuetext={`${numVal} ${reading.unit}, ${status}`}
+      >
         <div className="flex items-center justify-between text-[10px] text-slate-500 font-mono">
           <span>Low: {low}</span>
           <span className="font-semibold text-slate-700">Ref: {reference_range.text_range}</span>
@@ -107,7 +123,14 @@ export const RangeVisualizer: React.FC<RangeVisualizerProps> = ({ reading, compa
     const markerColor = isExceeded ? 'bg-amber-500 border-amber-600' : 'bg-emerald-500 border-emerald-600';
 
     return (
-      <div className="w-28 space-y-1">
+      <div 
+        className="w-28 space-y-1"
+        role="meter"
+        aria-label={`${reading.test_name} result ${numVal} ${reading.unit}, target ${reference_range.text_range}, status ${status}`}
+        aria-valuenow={numVal}
+        aria-valuemax={high}
+        aria-valuetext={`${numVal} ${reading.unit}, ${status}`}
+      >
         <div className="relative h-2 w-full bg-slate-100 rounded-full overflow-hidden flex">
           <div style={{ width: `${thresholdPct}%` }} className="bg-emerald-100 h-full" />
           <div style={{ width: `${100 - thresholdPct}%` }} className="bg-amber-100 h-full" />
@@ -135,7 +158,14 @@ export const RangeVisualizer: React.FC<RangeVisualizerProps> = ({ reading, compa
     const markerColor = isBelow ? 'bg-blue-500 border-blue-600' : 'bg-emerald-500 border-emerald-600';
 
     return (
-      <div className="w-28 space-y-1">
+      <div 
+        className="w-28 space-y-1"
+        role="meter"
+        aria-label={`${reading.test_name} result ${numVal} ${reading.unit}, target ${reference_range.text_range}, status ${status}`}
+        aria-valuenow={numVal}
+        aria-valuemin={low}
+        aria-valuetext={`${numVal} ${reading.unit}, ${status}`}
+      >
         <div className="relative h-2 w-full bg-slate-100 rounded-full overflow-hidden flex">
           <div style={{ width: `${thresholdPct}%` }} className="bg-blue-100 h-full" />
           <div style={{ width: `${100 - thresholdPct}%` }} className="bg-emerald-100 h-full" />

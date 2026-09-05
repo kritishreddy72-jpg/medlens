@@ -77,11 +77,11 @@ clinicalRouter.post('/fhir', (req: Request, res: Response) => {
 
 // Gemini 2.5 Flash Multimodal Extraction Endpoint
 clinicalRouter.post('/extract', async (req: Request, res: Response) => {
-  const { base64, mime_type, api_key, patient_context } = req.body;
-  const key = api_key || process.env.GEMINI_API_KEY;
+  const { base64, mime_type, patient_context } = req.body;
+  const key = process.env.GEMINI_API_KEY;
 
   if (!key) {
-    return res.status(400).json({ error: 'Gemini API key is required either in server environment (GEMINI_API_KEY) or request payload' });
+    return res.status(500).json({ error: 'Gemini API key is not configured on the server. Set GEMINI_API_KEY in backend environment.' });
   }
 
   if (!base64 || !mime_type) {
@@ -214,11 +214,11 @@ ${patient_context ? `Known patient context: ${patient_context}` : ''}`;
 
 // Gemini Patient-Friendly Summary Generation Endpoint
 clinicalRouter.post('/summary', async (req: Request, res: Response) => {
-  const { patient_name, readings, api_key } = req.body;
-  const key = api_key || process.env.GEMINI_API_KEY;
+  const { patient_name, readings } = req.body;
+  const key = process.env.GEMINI_API_KEY;
 
   if (!key) {
-    return res.status(400).json({ error: 'Gemini API key is required either in server environment (GEMINI_API_KEY) or request payload' });
+    return res.status(500).json({ error: 'Gemini API key is not configured on the server. Set GEMINI_API_KEY in backend environment.' });
   }
 
   try {

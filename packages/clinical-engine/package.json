@@ -11,7 +11,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "test": "vitest run"
+    "test": "vitest run --reporter=verbose"
   },
   "devDependencies": {
     "vitest": "^5.0.0"

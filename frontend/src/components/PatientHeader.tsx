@@ -27,14 +27,18 @@ export const PatientHeader: React.FC<PatientHeaderProps> = ({
   const vitals = patient.vitals;
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-5 transition-all space-y-4">
+    <div 
+      className="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-5 transition-all space-y-4"
+      role="region"
+      aria-label="Patient Profile and Baseline Vitals"
+    >
       
       {/* Top Row: Patient Demographics & Action */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4">
         
         {/* Patient Identity */}
         <div className="flex items-start space-x-3.5">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/10 to-indigo-500/20 border border-blue-200 flex items-center justify-center text-blue-600 shrink-0">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/10 to-indigo-500/20 border border-blue-200 flex items-center justify-center text-blue-600 shrink-0" aria-hidden="true">
             <User className="w-6 h-6" />
           </div>
           <div>
@@ -44,7 +48,7 @@ export const PatientHeader: React.FC<PatientHeaderProps> = ({
                 {patient.age} y/o • {patient.sex} {patient.blood_group ? `• Blood Group: ${patient.blood_group}` : ''}
               </span>
               <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                <ShieldCheck className="w-3 h-3" />
+                <ShieldCheck className="w-3 h-3" aria-hidden="true" />
                 <span>Source: USER_REPORTED</span>
               </span>
             </div>
@@ -58,9 +62,10 @@ export const PatientHeader: React.FC<PatientHeaderProps> = ({
         <div>
           <button
             onClick={onEditPatient}
+            aria-label="Update patient intake information and vitals"
             className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer"
           >
-            <Edit3 className="w-3.5 h-3.5" />
+            <Edit3 className="w-3.5 h-3.5" aria-hidden="true" />
             <span>Update Intake Info & Vitals</span>
           </button>
         </div>

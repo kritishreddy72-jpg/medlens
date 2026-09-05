@@ -26,7 +26,7 @@ export const ConflictBanner: React.FC<ConflictBannerProps> = ({
   if (conflicts.length === 0) return null;
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3" role="region" aria-label="Clinical Safety Alerts">
       {conflicts.map((conflict) => {
         const isCritical = conflict.severity === 'CRITICAL';
         const isExpanded = expandedId === conflict.id;
@@ -34,6 +34,8 @@ export const ConflictBanner: React.FC<ConflictBannerProps> = ({
         return (
           <div
             key={conflict.id}
+            role="alert"
+            aria-live={isCritical ? 'assertive' : 'polite'}
             className={`rounded-2xl border p-4 transition-all ${
               isCritical
                 ? 'bg-rose-50/90 border-rose-300 shadow-sm shadow-rose-500/10'
@@ -47,6 +49,7 @@ export const ConflictBanner: React.FC<ConflictBannerProps> = ({
                   className={`p-2 rounded-xl shrink-0 ${
                     isCritical ? 'bg-rose-600 text-white' : 'bg-amber-600 text-white'
                   }`}
+                  aria-hidden="true"
                 >
                   <ShieldAlert className="w-5 h-5" />
                 </div>
@@ -75,12 +78,14 @@ export const ConflictBanner: React.FC<ConflictBannerProps> = ({
               <div className="flex items-center space-x-1.5 shrink-0">
                 <button
                   onClick={() => setExpandedId(isExpanded ? null : conflict.id)}
-                  className="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-black/5 text-xs font-medium flex items-center space-x-1"
+                  aria-expanded={isExpanded}
+                  aria-label={isExpanded ? `Hide clinical rationale for ${conflict.title}` : `Show clinical rationale for ${conflict.title}`}
+                  className="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-black/5 text-xs font-medium flex items-center space-x-1 cursor-pointer"
                 >
                   <span className="hidden sm:inline text-xs">
                     {isExpanded ? 'Hide Rationale' : 'Clinical Rationale'}
                   </span>
-                  {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                  {isExpanded ? <ChevronUp className="w-4 h-4" aria-hidden="true" /> : <ChevronDown className="w-4 h-4" aria-hidden="true" />}
                 </button>
               </div>
 

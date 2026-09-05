@@ -31,12 +31,16 @@ export const ResponsibleAiSummaryCard: React.FC<ResponsibleAiSummaryCardProps> =
   };
 
   return (
-    <div className="bg-gradient-to-br from-slate-900 to-slate-950 text-slate-100 rounded-2xl p-6 border border-slate-800 shadow-md space-y-4">
+    <div 
+      className="bg-gradient-to-br from-slate-900 to-slate-950 text-slate-100 rounded-2xl p-6 border border-slate-800 shadow-md space-y-4"
+      role="region"
+      aria-label="Patient-Friendly Clinical Synthesis"
+    >
       
       {/* Header */}
       <div className="flex items-center justify-between border-b border-slate-800 pb-3">
         <div className="flex items-center space-x-2.5">
-          <div className="p-2 rounded-xl bg-blue-500/20 text-blue-400 border border-blue-500/30">
+          <div className="p-2 rounded-xl bg-blue-500/20 text-blue-400 border border-blue-500/30" aria-hidden="true">
             <Sparkles className="w-5 h-5" />
           </div>
           <div>
@@ -55,16 +59,18 @@ export const ResponsibleAiSummaryCard: React.FC<ResponsibleAiSummaryCardProps> =
         <button
           onClick={handleGenerateLive}
           disabled={loading}
-          className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors cursor-pointer"
+          aria-busy={loading}
+          aria-label="Regenerate dynamic patient-friendly summary via Gemini 2.5 Flash"
+          className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors cursor-pointer disabled:opacity-50"
           title="Regenerate dynamic summary via Gemini 2.5 Flash"
         >
-          <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+          <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} aria-hidden="true" />
           <span>{loading ? 'Synthesizing...' : 'Live AI Refresh'}</span>
         </button>
       </div>
 
       {/* Summary Content */}
-      <div className="text-xs leading-relaxed text-slate-300 space-y-3">
+      <div className="text-xs leading-relaxed text-slate-300 space-y-3" aria-live="polite">
         {customSummary ? (
           <div className="whitespace-pre-line bg-slate-800/60 p-4 rounded-xl border border-slate-700/80 font-sans">
             {customSummary}

@@ -30,12 +30,16 @@ export const BiomarkerChronometerView: React.FC<BiomarkerChronometerViewProps> =
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-xs p-5 space-y-4">
+    <div 
+      className="bg-white rounded-2xl border border-slate-200 shadow-xs p-5 space-y-4"
+      role="region"
+      aria-label="Biomarker Chronometer Longitudinal Trajectory"
+    >
       
       {/* Header */}
       <div className="flex items-center justify-between border-b border-slate-100 pb-3">
         <div className="flex items-center space-x-2.5">
-          <div className="p-2 rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-100">
+          <div className="p-2 rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-100" aria-hidden="true">
             <Activity className="w-5 h-5" />
           </div>
           <div>
@@ -53,7 +57,7 @@ export const BiomarkerChronometerView: React.FC<BiomarkerChronometerViewProps> =
       </div>
 
       {/* Grid of Trend Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" role="feed" aria-label="Sequential biomarker trends">
         {trends.map((trend, idx) => {
           const isImproving = trend.clinical_trend === 'improving';
           const isWorsening = trend.clinical_trend === 'worsening';
@@ -62,6 +66,8 @@ export const BiomarkerChronometerView: React.FC<BiomarkerChronometerViewProps> =
           return (
             <div
               key={idx}
+              role="article"
+              aria-label={`${trend.test_name} trend: shifted from ${trend.previous_value} to ${trend.current_value} ${trend.unit} (${sign}${trend.delta_pct}%), shift is ${trend.clinical_trend}`}
               className="p-4 rounded-xl border border-slate-100 bg-slate-50/60 hover:bg-white hover:shadow-sm hover:border-slate-200 transition-all space-y-3"
             >
               
@@ -82,17 +88,17 @@ export const BiomarkerChronometerView: React.FC<BiomarkerChronometerViewProps> =
                 >
                   {isImproving ? (
                     <>
-                      <TrendingDown className="w-3 h-3" />
+                      <TrendingDown className="w-3 h-3" aria-hidden="true" />
                       <span>Favorable Shift</span>
                     </>
                   ) : isWorsening ? (
                     <>
-                      <TrendingUp className="w-3 h-3" />
+                      <TrendingUp className="w-3 h-3" aria-hidden="true" />
                       <span>Adverse Shift</span>
                     </>
                   ) : (
                     <>
-                      <Minus className="w-3 h-3" />
+                      <Minus className="w-3 h-3" aria-hidden="true" />
                       <span>Stable</span>
                     </>
                   )}
@@ -121,7 +127,12 @@ export const BiomarkerChronometerView: React.FC<BiomarkerChronometerViewProps> =
 
                 {/* Micro Sparkline SVG */}
                 <div className="w-20 h-7">
-                  <svg className="w-full h-full overflow-visible" viewBox="0 0 80 24">
+                  <svg 
+                    className="w-full h-full overflow-visible" 
+                    viewBox="0 0 80 24"
+                    role="img"
+                    aria-label={`Trajectory graph for ${trend.test_name}`}
+                  >
                     <path
                       d={trend.sparkline_svg_path}
                       fill="none"

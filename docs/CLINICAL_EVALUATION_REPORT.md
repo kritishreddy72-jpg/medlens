@@ -3,7 +3,7 @@
 
 MedLens has been built, compiled, and launched live at **`http://127.0.0.1:3000/`**. 
 
-This document details the architectural implementation, the deterministic clinical safety mechanisms, and the step-by-step evaluation guide designed to score a **100/100** on Google AI's evaluation rubric.
+This document details the architectural implementation, the deterministic clinical safety mechanisms, and the step-by-step evaluation guide addressing the core dimensions of Google AI's evaluation rubric (Feasibility & Reliability, Differentiation, and Responsible AI).
 
 ---
 
@@ -11,13 +11,13 @@ This document details the architectural implementation, the deterministic clinic
 
 > [!NOTE]
 > The MedLens development server is actively running on your local machine:
-> - **Local URL:** [http://127.0.0.1:3000/](http://127.0.0.1:3000/)
-> - **Directory:** `C:\Users\K RITISH REDDY\.gemini\antigravity\scratch\medlens`
-> - **Tech Stack:** React 19 + TypeScript + Vite + Tailwind CSS v4 + `@google/genai`
+> - **Frontend URL:** [http://127.0.0.1:3000/](http://127.0.0.1:3000/)
+> - **Backend API:** [http://127.0.0.1:5000/api/health](http://127.0.0.1:5000/api/health)
+> - **Tech Stack:** React 19 + TypeScript + Vite + Tailwind CSS v4 + Express + `@google/genai`
 
 ---
 
-## 2. How MedLens Scores 100/100 on Evaluation Criteria
+## 2. Alignment with Evaluation Criteria
 
 ```mermaid
 flowchart LR
@@ -29,7 +29,7 @@ flowchart LR
     subgraph CoreEngine["Deterministic Validation Layer"]
         Eng1[Mathematical Range Comparator: Low / Normal / High]
         Eng2[Confidence Gating Barrier: Threshold < 0.70]
-        Eng3[Safety Radar: WHO-ATC Drug-Allergy Matching]
+        Eng3[Safety Radar: Curated WHO-ATC Drug-Allergy Matching]
     end
 
     subgraph HITL["Human-in-the-Loop Workbench"]
@@ -51,7 +51,7 @@ flowchart LR
 ### A. Feasibility & Mathematical Reliability (Zero-Hallucination)
 - **Problem Solved:** LLMs frequently guess reference ranges or alter numbers based on pre-training priors.
 - **MedLens Solution:** 
-  - The deterministic range parser [`src/engine/rangeEvaluator.ts`](file:///C:/Users/K%20RITISH%20REDDY/.gemini/antigravity/scratch/medlens/src/engine/rangeEvaluator.ts) mathematically tests intervals (`[low, high]`, `< X`, `> Y`).
+  - The deterministic range parser (`packages/clinical-engine/src/rangeEvaluator.ts`) mathematically tests intervals (`[low, high]`, `< X`, `> Y`).
   - **Zero-Hallucination Fallback:** If the laboratory report does not print a reference interval, MedLens displays **"Unspecified by Laboratory"** rather than inventing standard population stats.
   - **Confidence-Gated Review Barrier:** Any reading extracted with confidence $< 0.70$ (e.g. blurred ink or handwriting) is tagged with a yellow lock icon and barred from downstream analytics until verified by a human.
 
@@ -59,7 +59,7 @@ flowchart LR
 1. **Dual-Pane Ground-Truth Inspector:** 
    - Clicking any extracted biomarker in the table instantly highlights the verbatim source text in the original document preview, showing the exact snippet and confidence score.
 2. **Clinical Contradiction & Safety Radar:**
-   - Grounded in standard **WHO-ATC** and **RxNorm** classifications ([`src/engine/conflictRadar.ts`](file:///C:/Users/K%20RITISH%20REDDY/.gemini/antigravity/scratch/medlens/src/engine/conflictRadar.ts)). Cross-checks patient-reported allergies against prescribed medications (e.g., Penicillin $\leftrightarrow$ Augmentin) and flags contraindications with clinical rationales.
+   - Powered by a curated lookup table using real WHO-ATC codes (`packages/clinical-engine/src/conflictRadar.ts`). Cross-checks patient-reported allergies against prescribed medications (e.g., Penicillin $\leftrightarrow$ Augmentin) and flags contraindications with clinical rationales.
 3. **Biomarker Chronometer (Longitudinal Trajectory):**
    - Synthesizes multi-report data into SVG sparklines, calculates percentage change ($\Delta\%$), and classifies shifts as *Favorable*, *Adverse*, or *Stable*.
 4. **Context-Aware Proactive Clarification Chips:**
@@ -77,17 +77,17 @@ The top navigation bar contains instant 1-click test cases so evaluators can tes
 | :--- | :--- | :--- |
 | **1. Comprehensive Metabolic & Lipid Panel** | Marcus Vance (54M, Type 2 Diabetes). High Fasting Glucose (158 mg/dL) & HbA1c (8.2%), LDL (142 mg/dL). Alkaline Phosphatase has no range printed. | Demonstrates **"Unspecified by Laboratory"** fallback, High/Normal badges, and multi-marker synthesis. |
 | **2. Complete Blood Count with Review Barrier** | Sarah Lin (31F, acute infection). High WBC (14.8). Line 8 has an ink smudge on ESR (~46 mm/hr) extracted at 62% confidence. | Demonstrates the **Confidence-Gated Barrier**, proactive clarification chip, and Human-in-the-Loop inline verification. |
-| **3. Latent Drug-Allergy Contraindication** | Robert Chen (42M, severe Penicillin anaphylaxis). Urgent care prescription orders **Augmentin 875/125 mg**. | Demonstrates the **Clinical Contradiction Radar** triggering a CRITICAL red alert grounded in WHO-ATC J01CR02 classification. |
+| **3. Latent Drug-Allergy Contraindication** | Robert Chen (42M, severe Penicillin anaphylaxis). Urgent care prescription orders **Augmentin 875/125 mg**. | Demonstrates the **Clinical Contradiction Radar** triggering a CRITICAL red alert matched against curated WHO-ATC code J01CR02. |
 | **4. Longitudinal 6-Month Trajectory** | Elena Rostova (62F, Diabetes + CKD). Started SGLT2 therapy. Compares Mar 2026 vs Sep 2026. | Demonstrates the **Biomarker Chronometer**, $\Delta -17.9\%$ HbA1c drop, eGFR stabilization, and micro-sparklines. |
 
 ---
 
 ## 4. Key Files Created
 
-- [`src/types/clinical.ts`](file:///C:/Users/K%20RITISH%20REDDY/.gemini/antigravity/scratch/medlens/src/types/clinical.ts) — Typed schemas for patient intake, biomarkers, ranges, provenance, conflicts, and audit logs.
-- [`src/engine/rangeEvaluator.ts`](file:///C:/Users/K%20RITISH%20REDDY/.gemini/antigravity/scratch/medlens/src/engine/rangeEvaluator.ts) — Deterministic mathematical range comparison engine.
-- [`src/engine/conflictRadar.ts`](file:///C:/Users/K%20RITISH%20REDDY/.gemini/antigravity/scratch/medlens/src/engine/conflictRadar.ts) — WHO-ATC & RxNorm grounded drug-allergy contraindication detector.
-- [`src/engine/chronometer.ts`](file:///C:/Users/K%20RITISH%20REDDY/.gemini/antigravity/scratch/medlens/src/engine/chronometer.ts) — Multi-report longitudinal trend and sparkline generator.
-- [`src/engine/sbarGenerator.ts`](file:///C:/Users/K%20RITISH%20REDDY/.gemini/antigravity/scratch/medlens/src/engine/sbarGenerator.ts) — SBAR clinical briefing generator and FHIR R4 JSON exporter.
-- [`src/components/DualPaneInspector.tsx`](file:///C:/Users/K%20RITISH%20REDDY/.gemini/antigravity/scratch/medlens/src/components/DualPaneInspector.tsx) — Dual-pane split viewer linking source document text to table rows.
-- [`src/services/geminiService.ts`](file:///C:/Users/K%20RITISH%20REDDY/.gemini/antigravity/scratch/medlens/src/services/geminiService.ts) — Google GenAI Gemini 2.5 Flash multimodal extraction service with strict JSON responseSchema.
+- `packages/clinical-engine/src/types/clinical.ts` — Typed schemas for patient intake, biomarkers, ranges, provenance, conflicts, and audit logs.
+- `packages/clinical-engine/src/rangeEvaluator.ts` — Deterministic mathematical range comparison engine.
+- `packages/clinical-engine/src/conflictRadar.ts` — Curated WHO-ATC drug-allergy contraindication detector.
+- `packages/clinical-engine/src/chronometer.ts` — Multi-report longitudinal trend and sparkline generator.
+- `packages/clinical-engine/src/sbarGenerator.ts` — SBAR clinical briefing generator and FHIR R4 JSON exporter.
+- `frontend/src/components/DualPaneInspector.tsx` — Dual-pane split viewer linking source document text to table rows.
+- `backend/src/routes/clinicalRoutes.ts` — Secure backend Gemini multimodal extraction and clinical analytics endpoints.

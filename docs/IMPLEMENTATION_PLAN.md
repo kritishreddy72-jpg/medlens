@@ -1,12 +1,12 @@
 # Implementation Plan: MedLens — AI-Powered Clinical Information Intelligence
 
-Build a state-of-the-art clinical information platform designed to score **100/100** in Google AI's evaluation by pairing **Google Gemini multimodal intelligence** with a **deterministic clinical validation engine**, **dual-pane ground-truth provenance**, and **human-in-the-loop (HITL) auditability**.
+Build a state-of-the-art clinical information platform designed for rigorous evaluation against Google AI criteria by pairing **Google Gemini multimodal intelligence** with a **deterministic clinical validation engine**, **dual-pane ground-truth provenance**, and **human-in-the-loop (HITL) auditability**.
 
 ---
 
-## 1. Why This Approach Scores Maximum (100/100) on Google AI Evaluation Criteria
+## 1. Alignment with Google AI Evaluation Criteria
 
-| Evaluation Dimension | Standard Hackathon Submission (Scores ~60/100) | **MedLens Winning Approach (Scores 100/100)** |
+| Evaluation Dimension | Standard Clinical Project | **MedLens Deterministic Approach** |
 | :--- | :--- | :--- |
 | **Feasibility & Reliability (30%)** | Freeform text generation from prompt; hallucinations common; breaks on varied lab formats; requires working API key or fails. | **Deterministic Evaluation Engine**: Range evaluations (`LOW`, `NORMAL`, `HIGH`, `CRITICAL`) use mathematical range logic, not LLM guesses. Pre-loaded with rich interactive clinical test cases + live Gemini 2.5 Flash multimodal upload. |
 | **Unique Idea & Differentiation (35%)** | Simple "upload PDF & chat" chatbot interface. | **5 Clinical Innovations**: <br>1. *Dual-Pane Ground-Truth Pinpointer* (interactive source linking)<br>2. *Clinical Contradiction & Safety Radar* (drug-allergy & lab conflict detector)<br>3. *Biomarker Chronometer* (longitudinal multi-report trend analyzer with sparklines)<br>4. *Proactive Clarification Agent* (resolves blurry/missing data interactively)<br>5. *Doctor Visit Briefing Pack* (1-page printable SBAR + FHIR R4 JSON export). |
@@ -113,7 +113,7 @@ graph TD
 > [!IMPORTANT]
 > **Zero-Dependency Quick Launch**: To ensure the evaluators and judges can test the app immediately without complex local setup or missing API keys, the application will be built as a self-contained, high-performance web app with full offline realistic sample cases **plus** an easy API-key drawer to connect live Gemini models for custom uploads.
 >
-> We will set up the project in `C:\Users\K RITISH REDDY\.gemini\antigravity\scratch\medlens` using Node/Vite (or standard standalone web app if Node needs quick installation via winget).
+> We will set up the project within the repository workspace using Node/Vite (or standard standalone web app if Node needs quick installation via winget).
 
 ---
 

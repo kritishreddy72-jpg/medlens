@@ -156,32 +156,43 @@ export const DoctorQuestionsCard: React.FC<DoctorQuestionsCardProps> = ({
           {onShareWhatsApp && (
             <button
               onClick={onShareWhatsApp}
+              aria-label="Share questions for doctor to WhatsApp"
               className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 transition-colors cursor-pointer"
               title="Share these questions to WhatsApp"
             >
-              <MessageSquare className="w-3.5 h-3.5 text-emerald-600" />
+              <MessageSquare className="w-3.5 h-3.5 text-emerald-600" aria-hidden="true" />
               <span>Share to WhatsApp</span>
             </button>
           )}
           <button
             onClick={handleCopyAll}
+            aria-label="Copy all generated questions to clipboard"
             className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 transition-colors cursor-pointer"
           >
-            {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+            {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" aria-hidden="true" /> : <Copy className="w-3.5 h-3.5" aria-hidden="true" />}
             <span>{copied ? 'Copied to Clipboard' : 'Copy All'}</span>
           </button>
         </div>
       </div>
 
       {/* Questions List */}
-      <div className="space-y-2.5">
+      <div className="space-y-2.5" role="list" aria-label="Questions for your doctor">
         {generatedQuestions.map((q) => {
           const isChecked = checkedIds.has(q.id);
 
           return (
             <div
               key={q.id}
+              role="checkbox"
+              aria-checked={isChecked}
+              tabIndex={0}
               onClick={() => toggleCheck(q.id)}
+              onKeyDown={(e) => {
+                if (e.key === ' ' || e.key === 'Enter') {
+                  e.preventDefault();
+                  toggleCheck(q.id);
+                }
+              }}
               className={`p-3.5 rounded-xl border transition-all cursor-pointer flex items-start space-x-3 ${
                 isChecked
                   ? 'bg-teal-50/50 border-teal-200 text-teal-950 shadow-xs'
@@ -193,6 +204,7 @@ export const DoctorQuestionsCard: React.FC<DoctorQuestionsCardProps> = ({
                 type="checkbox"
                 checked={isChecked}
                 onChange={() => {}}
+                aria-label={`Select question: ${q.topic}`}
                 className="mt-1 rounded text-teal-600 focus:ring-teal-500 cursor-pointer"
               />
 
