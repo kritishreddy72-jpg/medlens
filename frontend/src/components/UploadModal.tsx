@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { Upload, X, Key, FileText, AlertCircle, Sparkles, Loader2, Cpu, CheckCircle2 } from 'lucide-react';
+import { Upload, X, FileText, AlertCircle, Sparkles, Loader2, Cpu } from 'lucide-react';
 import { extractMedicalReportWithGemini, ExtractionResult } from '../services/geminiService';
 import { parseClinicalTextOffline } from '../engine/offlineClinicalParser';
-import { BiomarkerReading } from '../types/clinical';
 
 interface UploadModalProps {
   onExtractionComplete: (result: ExtractionResult, rawTextPreview: string, docTitle: string) => void;
@@ -70,7 +69,6 @@ export const UploadModal: React.FC<UploadModalProps> = ({
   onClose
 }) => {
   const [mode, setMode] = useState<'LOCAL' | 'GEMINI'>('LOCAL');
-  const [apiKey, setApiKey] = useState(() => localStorage.getItem('medlens_gemini_key') || '');
   const [file, setFile] = useState<File | null>(null);
   const [rawTextFallback, setRawTextFallback] = useState('');
   const [loading, setLoading] = useState(false);
@@ -99,11 +97,6 @@ export const UploadModal: React.FC<UploadModalProps> = ({
   };
 
   const handleProcess = async () => {
-    if (mode === 'GEMINI' && !apiKey.trim()) {
-      setError('Please enter your Google Gemini API Key to enable live Gemini multimodal vision extraction, or switch to the Local Clinical Parser tab.');
-      return;
-    }
-
     if (!file && !rawTextFallback.trim()) {
       setError('Please select a report file or paste/load the clinical report text.');
       return;
@@ -112,9 +105,8 @@ export const UploadModal: React.FC<UploadModalProps> = ({
     setLoading(true);
     setError(null);
 
-    // If Gemini mode is selected with API Key
-    if (mode === 'GEMINI' && apiKey.trim()) {
-      localStorage.setItem('medlens_gemini_key', apiKey.trim());
+    // If Gemini mode is selected (runs through secure backend proxy)
+    if (mode === 'GEMINI') {
       try {
         if (file && !rawTextFallback.trim()) {
           const reader = new FileReader();
@@ -123,13 +115,13 @@ export const UploadModal: React.FC<UploadModalProps> = ({
             const mimeType = file.type || 'image/png';
 
             try {
-              const result = await extractMedicalReportWithGemini(
-                apiKey.trim(),
-                { base64: base64Data, mimeType }
-              );
+              const result = await extractMedicalReportWithGemini({
+                base64: base64Data,
+                mimeType
+              });
               onExtractionComplete(
                 result,
-                `Uploaded Document: ${file.name}\nExtracted via Gemini 2.5 Flash Multimodal Vision.\n\nSummary:\n${result.document_summary}`,
+                `Uploaded Document: ${file.name}\nExtracted via Secure Backend Gemini 2.5 Flash Multimodal Vision.\n\nSummary:\n${result.document_summary}`,
                 file.name
               );
               onClose();
@@ -141,10 +133,10 @@ export const UploadModal: React.FC<UploadModalProps> = ({
           reader.readAsDataURL(file);
         } else {
           const base64Data = btoa(unescape(encodeURIComponent(rawTextFallback)));
-          const result = await extractMedicalReportWithGemini(
-            apiKey.trim(),
-            { base64: base64Data, mimeType: 'text/plain' }
-          );
+          const result = await extractMedicalReportWithGemini({
+            base64: base64Data,
+            mimeType: 'text/plain'
+          });
           onExtractionComplete(result, rawTextFallback, file?.name || 'Uploaded Clinical Document');
           onClose();
         }
@@ -212,7 +204,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
             }`}
           >
             <Cpu className="w-4 h-4 text-emerald-600" />
-            <span>Local Clinical Engine (No API Key)</span>
+            <span>Local Clinical Engine (Offline)</span>
           </button>
           <button
             type="button"
@@ -222,30 +214,21 @@ export const UploadModal: React.FC<UploadModalProps> = ({
             }`}
           >
             <Sparkles className="w-4 h-4 text-blue-600" />
-            <span>Gemini 2.5 Flash Vision</span>
+            <span>Gemini 2.5 Flash (Backend API)</span>
           </button>
         </div>
 
         {/* Scrollable Body */}
         <div className="flex-1 overflow-y-auto space-y-4 text-xs pr-1">
           
-          {/* If Gemini Mode, Show API Key Input */}
+          {/* If Gemini Mode, Show Secure Server Notice */}
           {mode === 'GEMINI' && (
-            <div className="p-3 bg-blue-50/60 rounded-xl border border-blue-100 space-y-1.5">
-              <label className="flex items-center space-x-1.5 font-bold text-slate-800">
-                <Key className="w-3.5 h-3.5 text-blue-600" />
-                <span>Google Gemini API Key</span>
-              </label>
-              <input
-                type="password"
-                placeholder="AIzaSy..."
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-                className="w-full px-3 py-2 bg-white border rounded-xl font-mono text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none"
-              />
-              <p className="text-[10px] text-slate-500">
-                Stored strictly in your local browser session for direct Google Gen AI calls.
-              </p>
+            <div className="p-3 bg-blue-50/70 rounded-xl border border-blue-100 text-slate-700 flex items-start space-x-2">
+              <Sparkles className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+              <div className="text-[11px] leading-relaxed">
+                <span className="font-semibold text-slate-900 block">Server-Side Gemini 2.5 Flash Multimodal Intake</span>
+                Document payload is processed via the MedLens Express backend. The Gemini API key is kept secure in server environment variables (<code className="font-mono bg-blue-100/70 px-1 py-0.5 rounded text-blue-800">GEMINI_API_KEY</code>) and never exposed in browser localStorage.
+              </div>
             </div>
           )}
 

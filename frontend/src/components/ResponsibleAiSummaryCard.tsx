@@ -19,15 +19,9 @@ export const ResponsibleAiSummaryCard: React.FC<ResponsibleAiSummaryCardProps> =
   const [loading, setLoading] = useState(false);
 
   const handleGenerateLive = async () => {
-    const key = localStorage.getItem('medlens_gemini_key');
-    if (!key) {
-      alert('Please configure your Gemini API Key in the "Upload Report" menu to enable live dynamic AI synthesis.');
-      return;
-    }
-
     setLoading(true);
     try {
-      const summary = await generatePatientFriendlySummary(key, patient.name, readings);
+      const summary = await generatePatientFriendlySummary(patient.name, readings);
       setCustomSummary(summary);
     } catch (err: any) {
       alert(`Synthesis Error: ${err.message || String(err)}`);

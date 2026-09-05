@@ -1,4 +1,4 @@
-import { ClinicalPreset } from '../types/clinical';
+import { ClinicalPreset } from './types/clinical';
 
 export const CLINICAL_PRESETS: ClinicalPreset[] = [
   {
