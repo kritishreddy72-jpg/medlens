@@ -14,8 +14,8 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "paths": {
-      "@medlens/clinical-engine": ["../packages/clinical-engine/src/index.ts"],
-      "@medlens/clinical-engine/*": ["../packages/clinical-engine/src/*"]
+      "@medlens/clinical-engine": ["./src/engine/index.ts"],
+      "@medlens/clinical-engine/*": ["./src/engine/*"]
     },
 
     /* Linting */
