@@ -31,6 +31,10 @@
   "devDependencies": {
     "oxlint": "^1.79.0"
   },
+  "optionalDependencies": {
+    "@tailwindcss/oxide-linux-x64-gnu": "4.3.3",
+    "@tailwindcss/oxide-linux-x64-musl": "4.3.3"
+  },
   "description": "This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.",
   "main": "index.js",
   "keywords": [],
