@@ -1,4 +1,4 @@
-﻿import { BiomarkerReading, BiomarkerStatus, ReferenceRange } from '../types/clinical';
+import { BiomarkerReading, BiomarkerStatus, ReferenceRange } from '../types/clinical';
 
 export const CONFIDENCE_THRESHOLD = 0.70;
 

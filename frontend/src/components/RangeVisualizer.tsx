@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { BiomarkerReading, BiomarkerStatus, ReferenceRange } from '../types/clinical';
 import { ShieldCheck, HelpCircle } from 'lucide-react';
 

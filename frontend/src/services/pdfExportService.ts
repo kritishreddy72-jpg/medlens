@@ -1,4 +1,4 @@
-﻿import jsPDF from 'jspdf';
+import jsPDF from 'jspdf';
 import { BiomarkerReading, PatientProfile, ClinicalConflict } from '../types/clinical';
 import { SbarReport } from '../engine/sbarGenerator';
 

@@ -1,4 +1,4 @@
-﻿import { Router, Request, Response } from 'express';
+import { Router, Request, Response } from 'express';
 import { evaluateBiomarkerStatus } from '../engine/rangeEvaluator';
 import { detectClinicalConflicts } from '../engine/conflictRadar';
 import { calculateLongitudinalTrends } from '../engine/chronometer';

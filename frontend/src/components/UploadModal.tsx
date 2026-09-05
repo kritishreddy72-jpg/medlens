@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Upload, X, Key, FileText, AlertCircle, Sparkles, Loader2, Cpu, CheckCircle2 } from 'lucide-react';
 import { extractMedicalReportWithGemini, ExtractionResult } from '../services/geminiService';
 import { parseClinicalTextOffline } from '../engine/offlineClinicalParser';

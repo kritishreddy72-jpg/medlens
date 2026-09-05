@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { User, X, Plus, Trash2, ShieldCheck, Check, Activity, HeartPulse, BadgeAlert, Pill, Info } from 'lucide-react';
 import { PatientProfile, PatientVitals } from '../types/clinical';
 

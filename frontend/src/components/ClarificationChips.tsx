@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { HelpCircle, CheckCircle2, Sparkles, AlertCircle } from 'lucide-react';
 import { ClarificationPrompt } from '../types/clinical';
 

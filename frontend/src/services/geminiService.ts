@@ -1,4 +1,4 @@
-﻿import { GoogleGenAI, Type } from '@google/genai';
+import { GoogleGenAI, Type } from '@google/genai';
 import { BiomarkerReading, BiomarkerStatus, ReferenceRange } from '../types/clinical';
 import { evaluateBiomarkerStatus, isGatedForReview } from '../engine/rangeEvaluator';
 

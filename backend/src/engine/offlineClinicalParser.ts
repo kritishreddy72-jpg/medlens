@@ -1,4 +1,4 @@
-﻿import { BiomarkerReading, BiomarkerStatus, ReferenceRange } from '../types/clinical';
+import { BiomarkerReading, BiomarkerStatus, ReferenceRange } from '../types/clinical';
 import { evaluateBiomarkerStatus, parseReferenceRangeString } from './rangeEvaluator';
 
 export interface LocalExtractionResult {

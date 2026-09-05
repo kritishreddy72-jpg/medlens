@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Sparkles, ShieldCheck, AlertCircle, RefreshCw, BookOpen, HeartPulse } from 'lucide-react';
 import { BiomarkerReading, PatientProfile } from '../types/clinical';
 import { generatePatientFriendlySummary } from '../services/geminiService';

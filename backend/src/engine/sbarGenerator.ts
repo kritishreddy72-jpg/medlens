@@ -1,4 +1,4 @@
-﻿import { BiomarkerReading, ClinicalConflict, PatientProfile } from '../types/clinical';
+import { BiomarkerReading, ClinicalConflict, PatientProfile } from '../types/clinical';
 import { TrendAnalysis } from './chronometer';
 
 export interface SbarReport {

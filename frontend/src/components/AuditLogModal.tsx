@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { History, X, CheckCircle, ShieldCheck, UserCheck } from 'lucide-react';
 import { AuditEntry } from '../types/clinical';
 
