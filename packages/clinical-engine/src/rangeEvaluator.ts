@@ -80,6 +80,10 @@ export function evaluateBiomarkerStatus(
     const valClean = rawVal.trim().toLowerCase();
     const rangeClean = range.text_range.trim().toLowerCase();
     if (rangeClean.includes('negative') || rangeClean.includes('non-reactive')) {
+      const isNegative = valClean.includes('negative') || valClean.includes('non-reactive') || valClean.includes('normal') || valClean.includes('undetected');
+      if (isNegative) {
+        return 'NORMAL';
+      }
       if (valClean.includes('positive') || valClean.includes('reactive')) {
         return 'HIGH';
       }
